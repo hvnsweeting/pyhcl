@@ -33,13 +33,12 @@ def main():
     with infile:
         try:
             obj = hcl.load(infile)
-        except ValueError as e:
-            raise SystemExit(e)
-    with outfile:
-        json.dump(obj, outfile, sort_keys=True,
-                  indent=4, separators=(',', ': '))
-        outfile.write('\n')
-
+        except ValueError:
+            # seems empty file
+            # otherwise, other linter e.g tflint would catch it for us
+            pass
+        except Exception as e:
+            print('Failed to validate {}, error: {}'.format(infile.name, e))
 
 if __name__ == '__main__':
     main()

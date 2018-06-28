@@ -66,16 +66,31 @@ class HclParser(object):
     def objectlist_flat(self, lt, replace):
         '''
             Similar to the dict constructor, but handles dups
-            
+
             HCL is unclear on what one should do when duplicate keys are
             encountered. These comments aren't clear either:
-            
+
             from decoder.go: if we're at the root or we're directly within
                              a list, decode into dicts, otherwise lists
-                
+
             from object.go: there's a flattened list structure
         '''
         d = {}
+
+        import itertools
+
+        lt.sort(key=lambda i: i[0])
+        for k, v in itertools.groupby(lt, lambda i: i[0]):
+            if k in ['module', 'variable', 'output', 'resource', 'data', 'provider', 'locals',]:
+                continue
+            kvs = list(v)
+            if len(kvs) > 1:
+                msg = []
+                msg.append('Found duplicated keys {!r}'.format(k))
+                for value in kvs:
+                    msg.append('  {} = {}'.format(*value))
+                raise Exception('\n'.join(msg))
+
 
         for k, v in lt:
             if k in d.keys() and not replace:
