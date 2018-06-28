@@ -38,7 +38,7 @@ def main():
             # otherwise, other linter e.g tflint would catch it for us
             pass
         except Exception as e:
-            print('Failed to validate {}, error: {}'.format(infile.name, e))
+            print('Failed to validate {}, error: \n{}'.format(infile.name, e))
 
 if __name__ == '__main__':
     main()

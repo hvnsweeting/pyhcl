@@ -80,16 +80,21 @@ class HclParser(object):
         import itertools
 
         lt.sort(key=lambda i: i[0])
+        found_duplicate = False
+        msg = []
+
         for k, v in itertools.groupby(lt, lambda i: i[0]):
             if k in ['module', 'variable', 'output', 'resource', 'data', 'provider', 'locals',]:
                 continue
             kvs = list(v)
             if len(kvs) > 1:
-                msg = []
                 msg.append('Found duplicated keys {!r}'.format(k))
                 for value in kvs:
                     msg.append('  {} = {}'.format(*value))
-                raise Exception('\n'.join(msg))
+                found_duplicate = True
+
+        if found_duplicate:
+            raise Exception('\n'.join(msg))
 
 
         for k, v in lt:
